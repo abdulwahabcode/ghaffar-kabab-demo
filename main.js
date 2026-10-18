@@ -1,132 +1,108 @@
-/* Khan Baba Restaurant — interactive: sticky nav, mobile menu, menu tabs, scrollspy */
-(function () {
-  "use strict";
+/* Shaikh Abdul Ghaffar Kabab House — menu data + interactions */
+const MENU = [
+  // --- Kababs ---
+  {cat:"kababs", name:"Fry Kabab (Special)", desc:"The 1952 legend — hand-minced, crisped in desi ghee over coal fire.", price:750, pick:true},
+  {cat:"kababs", name:"Seekh Kabab (Beef) — 4 pcs", desc:"Smoky, juicy, straight off the seekh.", price:450},
+  {cat:"kababs", name:"Seekh Kabab (Chicken) — 4 pcs", desc:"Leaner cut, same coal-kissed flavour.", price:400},
+  {cat:"kababs", name:"Malai Boti — 8 pcs", desc:"Cream-marinated, melts in the mouth.", price:550},
+  {cat:"kababs", name:"Chapli Kabab — 2 pcs", desc:"Peshawari style, tomato and anardana punch.", price:350},
+  {cat:"kababs", name:"Shami Kabab — 4 pcs", desc:"Soft-centred classic, old-recipe spice mix.", price:300},
+  // --- Nihari & Paye ---
+  {cat:"nihari", name:"Special Nihari (Beef)", desc:"Slow-cooked overnight; the dish Karachi wakes up for.", price:550, pick:true},
+  {cat:"nihari", name:"Maghaz Nihari", desc:"With brain masala, ginger juliennes and green chillies.", price:650},
+  {cat:"nihari", name:"Paye (Beef) — 2 pcs", desc:"Rich trotters curry, desi-ghee tarka.", price:600},
+  {cat:"nihari", name:"Chicken Nihari", desc:"Lighter take on the house classic.", price:450},
+  // --- BBQ ---
+  {cat:"bbq", name:"Chicken Tikka (Leg / Chest)", desc:"Overnight marinade, blistered over open flame.", price:380},
+  {cat:"bbq", name:"Behari Boti", desc:"Thin strips, mustard-oil marinade, Karachi street classic.", price:600},
+  {cat:"bbq", name:"Chicken Malai Tikka", desc:"Mild, creamy, charred at the edges.", price:420},
+  {cat:"bbq", name:"Mutton Chops — 4 pcs", desc:"Tender ribs, finished with lemon and chaat masala.", price:900},
+  {cat:"bbq", name:"Chicken Wings — 8 pcs", desc:"Smoked wings tossed in house masala.", price:450},
+  {cat:"bbq", name:"Family BBQ Platter", desc:"Tikka, malai boti, seekh kabab & wings — serves 4–5.", price:2200},
+  // --- Karahi ---
+  {cat:"karahi", name:"Chicken Karahi (Half)", desc:"Wok-tossed with tomatoes, ginger and green chillies.", price:950},
+  {cat:"karahi", name:"Chicken Karahi (Full)", desc:"The full wok — built for sharing.", price:1800},
+  {cat:"karahi", name:"Mutton Karahi (Half)", desc:"Slow-tendered mutton, desi-ghee finish.", price:1400},
+  {cat:"karahi", name:"Mutton Karahi (Full)", desc:"Our most ordered sharing dish.", price:2400},
+  {cat:"karahi", name:"White Karahi (Chicken)", desc:"Cream, yoghurt and black pepper — mild and rich.", price:1000},
+  {cat:"karahi", name:"Daal Fry", desc:"Comfort bowl with desi-ghee tarka.", price:350},
+  // --- Breads ---
+  {cat:"breads", name:"Roghni Naan", desc:"Sesame-topped, tandoor fresh.", price:80},
+  {cat:"breads", name:"Tandoori Naan", desc:"Blistered and bubbly, straight from the clay oven.", price:60},
+  {cat:"breads", name:"Garlic Naan", desc:"Brushed with garlic butter.", price:120},
+  {cat:"breads", name:"Cheese Naan", desc:"Stuffed with molten cheese.", price:180},
+  {cat:"breads", name:"Puri Paratha", desc:"Flaky, ghee-laminated layers.", price:100},
+  {cat:"breads", name:"Tandoori Roti", desc:"Whole-wheat, tandoor-baked.", price:40},
+  // --- Drinks & Dessert ---
+  {cat:"drinks", name:"Fresh Lime Soda", desc:"Hand-shaken, salted or sweet.", price:200},
+  {cat:"drinks", name:"Doodh Patti", desc:"Slow-brewed milky chai, karak style.", price:150},
+  {cat:"drinks", name:"Kashmiri Chai", desc:"Pink tea with crushed pistachio.", price:200},
+  {cat:"drinks", name:"Cold Drink", desc:"Chilled soft drink.", price:120},
+  {cat:"drinks", name:"Shahi Kheer", desc:"Slow-cooked rice pudding, cardamom and silver leaf.", price:250},
+  {cat:"drinks", name:"Gulab Jamun — 2 pcs", desc:"Warm, syrup-soaked, rose-kissed.", price:200},
+];
 
-  /* ---------- Menu data (prices in PKR) ---------- */
-  var MENU = [
-    // Desi Specials
-    { cat: "desi", name: "Mutton Qorma", desc: "Slow-cooked mutton in a rich, aromatic desi-ghee gravy.", price: "Rs 650", badge: "Most Loved" },
-    { cat: "desi", name: "Beef Qorma", desc: "Tender beef simmered with browned onions and garam masala.", price: "Rs 550" },
-    { cat: "desi", name: "Chicken Qorma", desc: "Classic home-style qorma with a silky, spiced gravy.", price: "Rs 450" },
-    { cat: "desi", name: "Qeema Naan Special", desc: "Tandoor-baked naan stuffed with spiced minced beef.", price: "Rs 400" },
-    { cat: "desi", name: "Daal Fry Tadka", desc: "Yellow daal tempered with garlic, cumin and desi ghee.", price: "Rs 350" },
-    { cat: "desi", name: "Daal Makhani", desc: "Creamy black lentils, slow-simmered overnight.", price: "Rs 380" },
-    { cat: "desi", name: "Aloo Qeema", desc: "Minced beef with soft potatoes — a desi favourite.", price: "Rs 420" },
-    { cat: "desi", name: "Mix Sabzi", desc: "Seasonal vegetables tossed in light desi masala.", price: "Rs 320" },
-    // Karahi
-    { cat: "karahi", name: "Mutton Karahi (Half)", desc: "Fresh mutton, tomatoes, ginger — cooked to order in iron karahi.", price: "Rs 1,150" },
-    { cat: "karahi", name: "Mutton Karahi (Full)", desc: "The full experience — serves 3 to 4, desi ghee finish.", price: "Rs 2,250", badge: "Chef's Special" },
-    { cat: "karahi", name: "Chicken Karahi (Half)", desc: "Juicy chicken with fresh tomatoes and green chillies.", price: "Rs 750" },
-    { cat: "karahi", name: "Chicken Karahi (Full)", desc: "Serves 3 to 4 — Lahore's favourite, done right.", price: "Rs 1,450" },
-    { cat: "karahi", name: "White Chicken Karahi", desc: "Creamy white gravy with black pepper and yoghurt.", price: "Rs 850" },
-    // BBQ
-    { cat: "bbq", name: "Seekh Kabab — Beef (4 pcs)", desc: "Hand-rolled, charcoal-grilled, served with onion rings.", price: "Rs 450" },
-    { cat: "bbq", name: "Chicken Tikka", desc: "Overnight-marinated leg piece, smoky and tender.", price: "Rs 380" },
-    { cat: "bbq", name: "Chicken Malai Boti", desc: "Cream-cheese marinade — soft, mild, melts in the mouth.", price: "Rs 480" },
-    { cat: "bbq", name: "Chicken Boti", desc: "Spicy masala boti cubes grilled over open flame.", price: "Rs 420" },
-    { cat: "bbq", name: "Mutton Chops", desc: "Premium chops with a charred, peppery crust.", price: "Rs 650" },
-    { cat: "bbq", name: "Khan Baba BBQ Platter", desc: "Tikka, seekh kabab, malai boti & chops — serves 4.", price: "Rs 1,800", badge: "Family Deal" },
-    // Breads
-    { cat: "breads", name: "Qeema Naan", desc: "Stuffed with spiced qeema, brushed with desi ghee.", price: "Rs 380" },
-    { cat: "breads", name: "Roghni Naan", desc: "Soft, sesame-topped — perfect with qorma.", price: "Rs 80" },
-    { cat: "breads", name: "Garlic Naan", desc: "Fresh garlic and coriander, tandoor-hot.", price: "Rs 120" },
-    { cat: "breads", name: "Kulcha Naan", desc: "Flaky, layered, slightly crisp edges.", price: "Rs 100" },
-    { cat: "breads", name: "Tandoori Roti", desc: "Whole-wheat, straight from the tandoor wall.", price: "Rs 50" },
-    // Drinks & Dessert
-    { cat: "drinks", name: "Sweet Lassi", desc: "Thick Punjabi lassi with a malai topping.", price: "Rs 180" },
-    { cat: "drinks", name: "Salted Lassi", desc: "Classic namkeen lassi — the desi cooler.", price: "Rs 180" },
-    { cat: "drinks", name: "Doodh Patti", desc: "Slow-brewed milky chai, karak style.", price: "Rs 120" },
-    { cat: "drinks", name: "Fresh Lime Soda", desc: "Sweet, salted or mixed — fresh lime only.", price: "Rs 150" },
-    { cat: "drinks", name: "Soft Drink", desc: "Chilled — regular and diet.", price: "Rs 150" },
-    { cat: "drinks", name: "Mineral Water", desc: "Sealed bottled water.", price: "Rs 120" },
-    { cat: "drinks", name: "Gulab Jamun (2 pcs)", desc: "Warm, soft, soaked in rose syrup.", price: "Rs 200" },
-    { cat: "drinks", name: "Shahi Tukray", desc: "Royal bread pudding with rabri and nuts.", price: "Rs 280" },
-    { cat: "drinks", name: "Kheer", desc: "Slow-cooked rice pudding, cardamom-kissed.", price: "Rs 250" }
-  ];
+const TABS = [
+  {id:"all", label:"All"},
+  {id:"kababs", label:"Kababs"},
+  {id:"nihari", label:"Nihari & Paye"},
+  {id:"bbq", label:"BBQ"},
+  {id:"karahi", label:"Karahi"},
+  {id:"breads", label:"Breads"},
+  {id:"drinks", label:"Drinks & Dessert"},
+];
 
-  /* ---------- Render menu ---------- */
-  var grid = document.getElementById("menuGrid");
-  var tabs = document.querySelectorAll("#menuTabs .tab");
+const grid = document.getElementById("menuGrid");
+const tabsWrap = document.getElementById("menuTabs");
+const searchInput = document.getElementById("menuSearch");
+let activeCat = "all";
 
-  function cardHTML(item) {
-    var badge = item.badge ? '<span class="menu-badge">' + item.badge + "</span>" : "";
-    return (
-      '<article class="menu-card">' + badge +
-      '<div class="menu-card-head"><h3>' + item.name + '</h3>' +
-      '<span class="menu-price">' + item.price + "</span></div>" +
-      '<div class="menu-dots" aria-hidden="true"></div>' +
-      "<p>" + item.desc + "</p></article>"
-    );
+function rs(n){ return "Rs " + n.toLocaleString("en-PK"); }
+
+function renderTabs(){
+  tabsWrap.innerHTML = TABS.map(t =>
+    `<button class="tab${t.id===activeCat?" active":""}" data-cat="${t.id}">${t.label}</button>`
+  ).join("");
+  tabsWrap.querySelectorAll(".tab").forEach(btn =>
+    btn.addEventListener("click", () => { activeCat = btn.dataset.cat; renderTabs(); renderMenu(); })
+  );
+}
+
+function renderMenu(){
+  const q = (searchInput.value || "").trim().toLowerCase();
+  const items = MENU.filter(it =>
+    (activeCat === "all" || it.cat === activeCat) &&
+    (!q || it.name.toLowerCase().includes(q) || it.desc.toLowerCase().includes(q))
+  );
+  if(!items.length){
+    grid.innerHTML = `<p class="menu-note" style="grid-column:1/-1">No dishes found — try another search.</p>`;
+    return;
   }
+  grid.innerHTML = items.map(it => `
+    <article class="menu-item">
+      <div class="mi-top">
+        <span class="mi-name">${it.name}${it.pick ? `<span class="mi-pick">Chef's pick</span>` : ""}</span>
+        <span class="mi-dots"></span>
+        <span class="mi-price">${rs(it.price)}</span>
+      </div>
+      <p class="mi-desc">${it.desc}</p>
+    </article>
+  `).join("");
+}
 
-  function renderMenu(cat) {
-    grid.classList.add("fading");
-    setTimeout(function () {
-      var items = MENU.filter(function (m) { return m.cat === cat; });
-      grid.innerHTML = items.map(cardHTML).join("");
-      grid.classList.remove("fading");
-    }, 180);
-  }
+searchInput.addEventListener("input", renderMenu);
+renderTabs();
+renderMenu();
 
-  tabs.forEach(function (tab) {
-    tab.addEventListener("click", function () {
-      if (tab.classList.contains("active")) return;
-      tabs.forEach(function (t) {
-        t.classList.remove("active");
-        t.setAttribute("aria-selected", "false");
-      });
-      tab.classList.add("active");
-      tab.setAttribute("aria-selected", "true");
-      renderMenu(tab.getAttribute("data-cat"));
-    });
-  });
+// Sticky nav shadow
+const nav = document.getElementById("nav");
+addEventListener("scroll", () => nav.classList.toggle("scrolled", scrollY > 8), {passive:true});
 
-  // initial render
-  grid.innerHTML = MENU.filter(function (m) { return m.cat === "desi"; }).map(cardHTML).join("");
+// Mobile menu
+const burger = document.getElementById("burger");
+const navLinks = document.getElementById("navLinks");
+burger.addEventListener("click", () => navLinks.classList.toggle("open"));
+navLinks.querySelectorAll("a").forEach(a => a.addEventListener("click", () => navLinks.classList.remove("open")));
 
-  /* ---------- Sticky nav shadow ---------- */
-  var nav = document.getElementById("nav");
-  function onScroll() {
-    nav.classList.toggle("scrolled", window.scrollY > 12);
-  }
-  window.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
-
-  /* ---------- Mobile menu ---------- */
-  var toggle = document.getElementById("navToggle");
-  var links = document.getElementById("navLinks");
-  toggle.addEventListener("click", function () {
-    var open = links.classList.toggle("open");
-    toggle.setAttribute("aria-expanded", open ? "true" : "false");
-    toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-  });
-  links.querySelectorAll("a").forEach(function (a) {
-    a.addEventListener("click", function () {
-      links.classList.remove("open");
-      toggle.setAttribute("aria-expanded", "false");
-    });
-  });
-
-  /* ---------- Scrollspy ---------- */
-  var spyLinks = document.querySelectorAll(".nav-link");
-  var sections = ["home", "story", "menu", "reviews", "visit"]
-    .map(function (id) { return document.getElementById(id); })
-    .filter(Boolean);
-
-  if ("IntersectionObserver" in window && sections.length) {
-    var obs = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (e) {
-          if (e.isIntersecting) {
-            spyLinks.forEach(function (l) {
-              var on = l.getAttribute("href") === "#" + e.target.id;
-              l.classList.toggle("active", on);
-            });
-          }
-        });
-      },
-      { rootMargin: "-40% 0px -55% 0px" }
-    );
-    sections.forEach(function (s) { obs.observe(s); });
-  }
-})();
+// Footer year
+document.getElementById("year").textContent = new Date().getFullYear();
